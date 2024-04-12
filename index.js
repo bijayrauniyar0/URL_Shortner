@@ -10,6 +10,7 @@ app.use(express.urlencoded({extended: false}));
  
 let shortID = shortid.generate();
 
+// schema for the url
 const userSchema = new mongoose.Schema({
     shortURL:{
         type: String,
@@ -25,6 +26,8 @@ const userSchema = new mongoose.Schema({
 
 const URL = mongoose.model('URL', userSchema);
 
+// connection to database
+
 mongoose.connect('mongodb://localhost:27017/url-shortner')
 .then(() => {
     console.log('Connected to database');
@@ -37,6 +40,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 })
 
+// post request to create short url
 app.post('/url', async(req, res)=>{
     const longURL = req.body.url;
     await URL.create({
@@ -46,6 +50,9 @@ app.post('/url', async(req, res)=>{
     res.send(`Your Short URL is http://localhost:3000/${shortID}`);
 
 })
+
+// get request to redirect to the original url
+
 app.get('/:shortURL', async(req, res) => {
     const shortURL = req.params.shortURL;
     const url = await URL.findOne({shortURL: shortURL});
